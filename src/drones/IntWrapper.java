@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** @author Sebastian Wild (s_wild@cs.uni-kl.de) */
-public abstract class IntWrapper implements Printable, Cloneable {
+public abstract class IntWrapper implements Printable, Cloneable, Comparable<IntWrapper> {
 	protected IntWrapper(final int id) {
 		this.id = id;
 	}
@@ -41,5 +41,9 @@ public abstract class IntWrapper implements Printable, Cloneable {
 
 	@Override protected Object clone() throws CloneNotSupportedException {
 		return super.clone();
+	}
+
+	public int compareTo(final IntWrapper o) {
+		return Integer.compare(o.id(), this.id());
 	}
 }

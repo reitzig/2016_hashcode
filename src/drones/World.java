@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /** @author Sebastian Wild (s_wild@cs.uni-kl.de) */
 public class World {
@@ -63,8 +64,7 @@ public class World {
 		res.ordersById = new HashMap<Integer,Order>(res.nOrders*4/3+5);
 		for (int i = 0; i < res.nOrders; ++i) {
 			final String[] wl = in.readLine().split(" ");
-			final HashMap<Product, Integer> quantities = new HashMap<Product, Integer>(
-				  res.nProducts * 4 / 3 + 5);
+			final Map<Product, Integer> quantities = new TreeMap<Product, Integer>();
 			final int nItems = Integer.parseInt(in.readLine());
 			final String[] prods = in.readLine().split(" ");
 			for (int j = 0; j < nItems; ++j) {

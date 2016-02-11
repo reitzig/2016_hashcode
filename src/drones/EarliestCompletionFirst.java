@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 /** @author Sebastian Wild (s_wild@cs.uni-kl.de) */
@@ -54,7 +55,9 @@ public class EarliestCompletionFirst {
 				  public int compare(final Warehouse o1, final Warehouse o2) {
 					  final int dist1 = World.dist(o1.x, o1.y, order.x, order.y);
 					  final int dist2 = World.dist(o2.x, o2.y, order.x, order.y);
-					  return Integer.compare(dist1, dist2);
+
+					  return dist1 == dist2 ? Integer.compare(o1.id(), o2.id())
+							 : Integer.compare(dist1, dist2);
 				  }
 			  });
 		whByDistance.addAll(whCopy.values());
@@ -82,7 +85,8 @@ public class EarliestCompletionFirst {
 			} while (weight > 0);
 		}
 
-		final OrderSchedule orderSchedule = new OrderSchedule();
+		List<Action> actions = new LinkedList<Action>();
+		int completionTime = Integer.MIN_VALUE;
 		while (!droneLoads.isEmpty()) {
 			Drone d = null;
 			DroneLoad load = null;
@@ -99,24 +103,26 @@ public class EarliestCompletionFirst {
 					}
 				}
 			}
-			orderSchedule.actions.addAll(load.toActions(d, order.id()));
-			System.out.println(orderSchedule.actions);
+			actions.addAll(load.toActions(d, order.id()));
 			final Warehouse wh = whCopy.get(load.warehouseId);
 			d.tIdle += World.dist(d.x, d.y, wh.x, wh.y) + load.load.size() * 2 + World.dist(
 				  order.x, order.y, wh.x, wh.y);
 			d.x = order.x;
 			d.y = order.y;
-			orderSchedule.completionTime = Math.max(orderSchedule.completionTime, d.tIdle);
+			completionTime = Math.max(completionTime, d.tIdle);
 			dronesCopy.remove(d.id());
 			droneLoads.remove(load);
 		}
 
-		return orderSchedule;
+		for (final Integer integer : toDeliver.values()) {
+			assert integer == null || integer <= 0;
+		}
+
+		return new OrderSchedule(completionTime, order.id(), actions);
 	}
 
 	OrderSchedule nextOrder() throws CloneNotSupportedException {
-		OrderSchedule min = new OrderSchedule();
-		min.completionTime = Integer.MAX_VALUE;
+		OrderSchedule min = new OrderSchedule(Integer.MAX_VALUE, -1);
 		for (final Order order : world.ordersById.values()) {
 			final OrderSchedule orderSchedule = fastestSolution(order);
 			if (orderSchedule.completionTime < min.completionTime) {
@@ -129,19 +135,25 @@ public class EarliestCompletionFirst {
 
 	public void computeSchedule(BufferedWriter out)
 		  throws IOException, CloneNotSupportedException {
+		Set<Integer> orderIds = new TreeSet<Integer>();
 		while (!world.ordersById.isEmpty()) {
 			currentTime = nextInterestingTime();
 			final OrderSchedule orderSchedule = nextOrder();
 			out.write(orderSchedule.print());
 			// update drones
 			execute(orderSchedule, world.warehouseById, world.dronesById, world.ordersById);
+			System.out.println("orderSchedule.orderId = " + orderSchedule.orderId);
+			if (orderIds.contains(orderSchedule.orderId)) {
+				assert false;
+			}
 		}
 	}
 
 	public static void main(String[] args) throws IOException, CloneNotSupportedException {
-		final EarliestCompletionFirst first = new EarliestCompletionFirst(World.parse(
-			  new BufferedReader(new FileReader(
-					 "/home/seb/projects/HashCode2016/busy_day.in"))));
+		final World world = World.parse(new BufferedReader(new FileReader(
+			  "/home/seb/projects/HashCode2016/busy_day.in")));
+		System.out.println("world.warehouseById.get(7) = " + world.warehouseById.get(7));
+		final EarliestCompletionFirst first = new EarliestCompletionFirst(world);
 		first.computeSchedule(new BufferedWriter(new PrintWriter(System.out)));
 	}
 
@@ -179,7 +191,7 @@ public class EarliestCompletionFirst {
 		}
 		assert orderId != -1;
 		for (final Integer integer : orders.get(orderId).quantities.values()) {
-			assert integer == null || integer == 0;
+			assert integer == null || integer <= 0;
 		}
 		orders.remove(orderId);
 
@@ -188,9 +200,22 @@ public class EarliestCompletionFirst {
 
 	class OrderSchedule implements Printable {
 
+		OrderSchedule(final int completionTime, final int orderId) {
+			this.completionTime = completionTime;
+			this.orderId = orderId;
+		}
+
+		OrderSchedule(final int completionTime, final int orderId, List<Action> actions) {
+			this.completionTime = completionTime;
+			this.orderId = orderId;
+			this.actions.addAll(actions);
+		}
+
 		final List<Action> actions = new LinkedList<Action>();
 
-		int completionTime = Integer.MIN_VALUE;
+		final int completionTime;
+
+		final int orderId;
 
 		public String print() {
 			StringBuilder res = new StringBuilder();

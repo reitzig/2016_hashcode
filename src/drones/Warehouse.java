@@ -22,4 +22,8 @@ public class Warehouse extends IntWrapper {
 		return new Warehouse(this.id(), this.x, this.y, new HashMap<Product, Integer>(
 			  this.stock));
 	}
+
+	@Override public String toString() {
+		return "Warehouse("+id() + ", x=" + x + ", y=" + y + ", stock=" + stock + ')';
+	}
 }
