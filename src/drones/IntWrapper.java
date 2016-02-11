@@ -7,14 +7,9 @@ import java.util.Map;
 public abstract class IntWrapper implements Printable {
 	protected IntWrapper(final int id) {
 		this.id = id;
-		final Integer b = maxUsedId.get(getClass());
-		maxUsedId.put(getClass(), b == null ? id : Math.max(id, b));
 	}
 
 	protected final int id;
-
-	protected static final Map<Class<? extends IntWrapper>, Integer> maxUsedId =
-		  new HashMap<Class<? extends IntWrapper>, Integer>(10);
 
 	public int id() {
 		return id;

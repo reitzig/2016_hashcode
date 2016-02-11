@@ -4,8 +4,8 @@ import java.util.Map;
 
 /** @author Sebastian Wild (s_wild@cs.uni-kl.de) */
 public class Order extends IntWrapper {
-	private int x,y;
-	private final Map<Product,Integer> quantities;
+	public int x,y;
+	public final Map<Product,Integer> quantities;
 
 	public Order(final int id, final int x, final int y,
 		  final Map<Product, Integer> quantities) {
