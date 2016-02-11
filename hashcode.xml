@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="hashcode" default="all">
+  
+  
+  <property file="hashcode.properties"/>
+  <!-- Uncomment the following property if no tests compilation is needed -->
+  <!-- 
+  <property name="skip.tests" value="true"/>
+   -->
+  
+  <!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="128m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/SCCS/**"/>
+    <exclude name="**/RCS/**"/>
+    <exclude name="**/rcs/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/.pyc/**"/>
+    <exclude name="**/.pyo/**"/>
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/.git/**"/>
+    <exclude name="**/*.hprof/**"/>
+    <exclude name="**/_svn/**"/>
+    <exclude name="**/.hg/**"/>
+    <exclude name="**/.sbas/**"/>
+    <exclude name="**/.IJI.*/**"/>
+    <exclude name="**/vssver.scc/**"/>
+    <exclude name="**/vssver2.scc/**"/>
+    <exclude name="**/*.lib/**"/>
+    <exclude name="**/*~/**"/>
+    <exclude name="**/__pycache__/**"/>
+    <exclude name="**/.bundle/**"/>
+  </patternset>
+  <patternset id="library.patterns">
+    <include name="*.war"/>
+    <include name="*.ear"/>
+    <include name="*.zip"/>
+    <include name="*.swc"/>
+    <include name="*.egg"/>
+    <include name="*.jar"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <include name="**/?*.properties"/>
+    <include name="**/?*.xml"/>
+    <include name="**/?*.gif"/>
+    <include name="**/?*.png"/>
+    <include name="**/?*.jpeg"/>
+    <include name="**/?*.jpg"/>
+    <include name="**/?*.html"/>
+    <include name="**/?*.dtd"/>
+    <include name="**/?*.tld"/>
+    <include name="**/?*.ftl"/>
+  </patternset>
+  
+  
+  <!-- Global Libraries -->
+  
+  <!-- Modules -->
+  
+  
+  <!-- Module HashCode2016 -->
+  
+  <dirname property="module.hashcode2016.basedir" file="${ant.file}"/>
+  
+  
+  
+  <property name="compiler.args.hashcode2016" value="${compiler.args}"/>
+  
+  <property name="hashcode2016.output.dir" value="${module.hashcode2016.basedir}/../../../projects/HashCode2016/out/production/HashCode2016"/>
+  <property name="hashcode2016.testoutput.dir" value="${module.hashcode2016.basedir}/../../../projects/HashCode2016/out/test/HashCode2016"/>
+  
+  <path id="hashcode2016.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="hashcode2016.module.production.classpath"/>
+  
+  <path id="hashcode2016.runtime.production.module.classpath">
+    <pathelement location="${hashcode2016.output.dir}"/>
+  </path>
+  
+  <path id="hashcode2016.module.classpath">
+    <pathelement location="${hashcode2016.output.dir}"/>
+  </path>
+  
+  <path id="hashcode2016.runtime.module.classpath">
+    <pathelement location="${hashcode2016.testoutput.dir}"/>
+    <pathelement location="${hashcode2016.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.hashcode2016">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.hashcode2016">
+    <patternset refid="excluded.from.module.hashcode2016"/>
+  </patternset>
+  
+  <path id="hashcode2016.module.sourcepath">
+    <dirset dir="${module.hashcode2016.basedir}/../../../projects/HashCode2016">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.hashcode2016" depends="compile.module.hashcode2016.production,compile.module.hashcode2016.tests" description="Compile module HashCode2016"/>
+  
+  <target name="compile.module.hashcode2016.production" description="Compile module HashCode2016; production classes">
+    <mkdir dir="${hashcode2016.output.dir}"/>
+    <javac destdir="${hashcode2016.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true">
+      <compilerarg line="${compiler.args.hashcode2016}"/>
+      <bootclasspath refid="hashcode2016.module.bootclasspath"/>
+      <classpath refid="hashcode2016.module.production.classpath"/>
+      <src refid="hashcode2016.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.hashcode2016"/>
+    </javac>
+    
+    <copy todir="${hashcode2016.output.dir}">
+      <fileset dir="${module.hashcode2016.basedir}/../../../projects/HashCode2016/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.hashcode2016.tests" depends="compile.module.hashcode2016.production" description="compile module HashCode2016; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.hashcode2016" description="cleanup module">
+    <delete dir="${hashcode2016.output.dir}"/>
+    <delete dir="${hashcode2016.testoutput.dir}"/>
+  </target>
+  
+  <target name="init" description="Build initialization">
+    <!-- Perform any build initialization in this target -->
+  </target>
+  
+  <target name="clean" depends="clean.module.hashcode2016" description="cleanup all"/>
+  
+  <target name="build.modules" depends="init, clean, compile.module.hashcode2016" description="build all modules"/>
+  
+  <target name="all" depends="build.modules" description="build all"/>
+</project>
