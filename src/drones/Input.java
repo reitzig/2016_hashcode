@@ -1,7 +1,10 @@
 package drones;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,11 +31,6 @@ public class Input {
 		res.deadline = Integer.parseInt(line[3]);
 		res.maxLoad = Integer.parseInt(line[4]);
 
-		res.dronesById = new HashMap<Integer, Drone>(nDrones * 4 / 3 + 5);
-		for (int i = 0; i < nDrones; ++i) {
-			res.dronesById.put(i, new Drone(i, res.maxLoad));
-		}
-
 		int nProducts = Integer.parseInt(in.readLine());
 
 		res.productsById = new HashMap<Integer, Product>(nProducts * 4 / 3 + 5);
@@ -41,7 +39,13 @@ public class Input {
 			res.productsById.put(i, new Product(i, Integer.parseInt(weights[i])));
 		}
 
+		res.dronesById = new HashMap<Integer, Drone>(nDrones * 4 / 3 + 5);
+		for (int i = 0; i < nDrones; ++i) {
+			res.dronesById.put(i, new Drone(i, res.maxLoad));
+		}
+
 		int nWarehouses = Integer.parseInt(in.readLine());
+		res.warehouseById = new HashMap<Integer, Warehouse>(nWarehouses * 4 / 3 + 5);
 		for (int i = 0; i < nWarehouses; ++i) {
 			final String[] wl = in.readLine().split(" ");
 			final HashMap<Product, Integer> stock = new HashMap<Product, Integer>(
@@ -55,6 +59,7 @@ public class Input {
 		}
 
 		int nOrders = Integer.parseInt(in.readLine());
+		res.orders = new ArrayList<Order>(nOrders);
 		for (int i = 0; i < nOrders; ++i) {
 			final String[] wl = in.readLine().split(" ");
 			final HashMap<Product, Integer> quantities = new HashMap<Product, Integer>(
@@ -62,15 +67,20 @@ public class Input {
 			final int nItems = Integer.parseInt(in.readLine());
 			final String[] prods = in.readLine().split(" ");
 			for (int j = 0; j < nItems; ++j) {
-				final Product item = res.productsById.get(Integer.parseInt(prods[i]));
+				final Product item = res.productsById.get(Integer.parseInt(prods[j]));
 				final Integer old = quantities.get(item);
 				quantities.put(item, old == null ? 1 : old + 1);
 			}
-			res.orders.add(new Order(i,Integer.parseInt(wl[0]), Integer.parseInt(
-				  wl[1]),quantities));
+			res.orders.add(new Order(i, Integer.parseInt(wl[0]), Integer.parseInt(wl[1]),
+				  quantities));
 		}
 		return res;
 
+	}
+
+	public static void main(String[] args) throws IOException {
+		Input.parse(new BufferedReader(new FileReader(
+			  "/home/seb/projects/HashCode2016/mother_of_all_warehouses.in")));
 	}
 
 }
