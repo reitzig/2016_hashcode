@@ -2,7 +2,6 @@ package drones;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -61,9 +60,10 @@ public class EarliestCompletionFirst {
 		whByDistance.addAll(whCopy.values());
 
 		for (final Warehouse warehouse : whByDistance) {
-			int weight = 0;
+			int weight;
 			do {
 				Map<Product, Integer> droneLoad = new HashMap<Product, Integer>();
+				weight = 0;
 				for (final Map.Entry<Product, Integer> entry : toDeliver.entrySet()) {
 					final Product product = entry.getKey();
 					final Integer Stock = warehouse.stock.get(product);
@@ -100,12 +100,15 @@ public class EarliestCompletionFirst {
 				}
 			}
 			orderSchedule.actions.addAll(load.toActions(d, order.id()));
+			System.out.println(orderSchedule.actions);
 			final Warehouse wh = whCopy.get(load.warehouseId);
 			d.tIdle += World.dist(d.x, d.y, wh.x, wh.y) + load.load.size() * 2 + World.dist(
 				  order.x, order.y, wh.x, wh.y);
 			d.x = order.x;
 			d.y = order.y;
 			orderSchedule.completionTime = Math.max(orderSchedule.completionTime, d.tIdle);
+			dronesCopy.remove(d.id());
+			droneLoads.remove(load);
 		}
 
 		return orderSchedule;
@@ -113,6 +116,7 @@ public class EarliestCompletionFirst {
 
 	OrderSchedule nextOrder() throws CloneNotSupportedException {
 		OrderSchedule min = new OrderSchedule();
+		min.completionTime = Integer.MAX_VALUE;
 		for (final Order order : world.ordersById.values()) {
 			final OrderSchedule orderSchedule = fastestSolution(order);
 			if (orderSchedule.completionTime < min.completionTime) {
@@ -135,8 +139,8 @@ public class EarliestCompletionFirst {
 	}
 
 	public static void main(String[] args) throws IOException, CloneNotSupportedException {
-		final EarliestCompletionFirst first = new EarliestCompletionFirst(
-			  World.parse(new BufferedReader(new FileReader(
+		final EarliestCompletionFirst first = new EarliestCompletionFirst(World.parse(
+			  new BufferedReader(new FileReader(
 					 "/home/seb/projects/HashCode2016/busy_day.in"))));
 		first.computeSchedule(new BufferedWriter(new PrintWriter(System.out)));
 	}
@@ -172,11 +176,13 @@ public class EarliestCompletionFirst {
 				final Integer old = order.quantities.get(deliver.product);
 				order.quantities.put(deliver.product, old - deliver.quantity);
 			}
-			assert orderId != -1;
-			for (final Integer integer : orders.get(orderId).quantities.values()) {
-				assert integer == 0;
-			}
 		}
+		assert orderId != -1;
+		for (final Integer integer : orders.get(orderId).quantities.values()) {
+			assert integer == null || integer == 0;
+		}
+		orders.remove(orderId);
+
 	}
 
 
@@ -216,6 +222,9 @@ public class EarliestCompletionFirst {
 			return res;
 		}
 
+		@Override public String toString() {
+			return "DroneLoad(" + "load=" + load + ", warehouseId=" + warehouseId + ')';
+		}
 	}
 
 }

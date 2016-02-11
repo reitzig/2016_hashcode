@@ -14,4 +14,9 @@ public class Deliver extends Action {
 	public String print() {
 		return droneId + " " + "D" + " " + orderId + " " + product.id() + " " + quantity;
 	}
+
+	@Override public String toString() {
+		return "Deliver(" + "orderId=" + orderId + ", droneId=" + droneId + ", product="
+			  + product + ", quantity=" + quantity + ')';
+	}
 }

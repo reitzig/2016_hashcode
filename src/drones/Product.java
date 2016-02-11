@@ -10,4 +10,7 @@ public class Product extends IntWrapper {
 		this.weight = weight;
 	}
 
+	@Override public String toString() {
+		return "Product(" + id() + "," + "weight=" + weight + ')';
+	}
 }

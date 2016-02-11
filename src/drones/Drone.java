@@ -22,4 +22,8 @@ public class Drone extends IntWrapper {
 		// warning: only works without inventory!!!
 		return super.clone();
 	}
+
+	@Override public String toString() {
+		return "Drone(" + id() + "," + "x=" + x + ", y=" + y + ", tIdle=" + tIdle + ')';
+	}
 }

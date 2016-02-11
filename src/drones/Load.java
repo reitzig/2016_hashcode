@@ -15,4 +15,8 @@ public class Load extends Action {
 		return droneId + " " + "D" + " " + warehouseId + " " + product.id() + " " + quantity;
 	}
 
+	@Override public String toString() {
+		return "Load(" + "warehouseId=" + warehouseId +", droneId=" + droneId + ", product=" + product + ", quantity="
+			  + quantity + ')';
+	}
 }

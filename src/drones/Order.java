@@ -14,4 +14,8 @@ public class Order extends IntWrapper {
 		this.y = y;
 		this.quantities = quantities;
 	}
+
+	@Override public String toString() {
+		return "Order(" +id() + "," + "x=" + x + ", y=" + y + ", quantities=" + quantities + ')';
+	}
 }
