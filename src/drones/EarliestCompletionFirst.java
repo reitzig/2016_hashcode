@@ -142,10 +142,11 @@ public class EarliestCompletionFirst {
 			out.write(orderSchedule.print());
 			// update drones
 			execute(orderSchedule, world.warehouseById, world.dronesById, world.ordersById);
-			System.out.println("orderSchedule.orderId = " + orderSchedule.orderId);
 			if (orderIds.contains(orderSchedule.orderId)) {
 				assert false;
 			}
+			orderIds.add(orderSchedule.orderId);
+			System.out.println("[" + (orderIds.size()*100/world.nOrders) + "%] " + orderIds.size() + "/" + world.nOrders);
 		}
 	}
 
