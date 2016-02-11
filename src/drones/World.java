@@ -5,24 +5,26 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /** @author Sebastian Wild (s_wild@cs.uni-kl.de) */
-public class Input {
-	private int nRows, nCols, deadline, maxLoad, nProducts, nWarehouses, nOrders, nDrones;
+public class World {
+	int nRows, nCols, deadline, maxLoad, nProducts, nWarehouses, nOrders, nDrones;
 
-	private Map<Integer, Drone> dronesById;
+	Map<Integer, Drone> dronesById;
 
-	private Map<Integer, Product> productsById;
+	Map<Integer, Product> productsById;
 
-	private Map<Integer, Warehouse> warehouseById;
+	Map<Integer, Warehouse> warehouseById;
 
-	private List<Order> orders;
+	Map<Integer,Order> ordersById;
 
-	public static Input parse(BufferedReader in) throws IOException {
+	public static World parse(BufferedReader in) throws IOException {
 
-		final Input res = new Input();
+		final World res = new World();
 		String[] line = in.readLine().split(" ");
 		res.nRows = Integer.parseInt(line[0]);
 		res.nCols = Integer.parseInt(line[1]);
@@ -53,12 +55,12 @@ public class Input {
 			for (int j = 0; j < res.nProducts; ++j) {
 				stock.put(res.productsById.get(j), Integer.valueOf(prods[j]));
 			}
-			res.warehouseById.put(i, new Warehouse(Integer.parseInt(wl[0]), Integer.parseInt(
+			res.warehouseById.put(i, new Warehouse(i, Integer.parseInt(wl[0]), Integer.parseInt(
 				  wl[1]), stock));
 		}
 
 		res.nOrders = Integer.parseInt(in.readLine());
-		res.orders = new ArrayList<Order>(res.nOrders);
+		res.ordersById = new HashMap<Integer,Order>(res.nOrders*4/3+5);
 		for (int i = 0; i < res.nOrders; ++i) {
 			final String[] wl = in.readLine().split(" ");
 			final HashMap<Product, Integer> quantities = new HashMap<Product, Integer>(
@@ -70,12 +72,17 @@ public class Input {
 				final Integer old = quantities.get(item);
 				quantities.put(item, old == null ? 1 : old + 1);
 			}
-			res.orders.add(new Order(i, Integer.parseInt(wl[0]), Integer.parseInt(wl[1]),
+			res.ordersById.put(i, new Order(i, Integer.parseInt(wl[0]), Integer.parseInt(wl[1]),
 				  quantities));
 		}
 		return res;
 
 	}
+
+	static int dist(int x1, int y1, int x2, int y2) {
+		return (int) Math.round(Math.ceil(Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2))));
+	}
+
 
 	@Override public String toString() {
 		return "Input(" + "nRows=" + nRows + ", nCols=" + nCols + ", deadline=" + deadline
@@ -91,21 +98,21 @@ public class Input {
 
 		for (final String file : inputs) {
 			System.out.println("file = " + file);
-			final Input input = Input.parse(new BufferedReader(new FileReader(file)));
-			System.out.println("input = " + input);
+			final World world = World.parse(new BufferedReader(new FileReader(file)));
+			System.out.println("input = " + world);
 
 			double weightSum = 0;
 
-			for (final Order order : input.orders) {
+			for (final Order order : world.ordersById.values()) {
 				double weight = 0;
 				for (final Map.Entry<Product, Integer> entry : order.quantities.entrySet()) {
 					weight += entry.getKey().weight * entry.getValue();
 				}
 				weightSum += weight;
-				System.out.print(weight+ ", ");
+				System.out.print(weight + ", ");
 			}
 
-			System.out.println("avg weight = " + weightSum / input.orders.size());
+			System.out.println("avg weight = " + weightSum / world.ordersById.size());
 
 		}
 	}
