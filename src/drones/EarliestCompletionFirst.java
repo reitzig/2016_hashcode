@@ -3,6 +3,7 @@ package drones;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Comparator;
@@ -147,15 +148,22 @@ public class EarliestCompletionFirst {
 			}
 			orderIds.add(orderSchedule.orderId);
 			System.out.println("[" + (orderIds.size()*100/world.nOrders) + "%] " + orderIds.size() + "/" + world.nOrders);
+			out.flush();
 		}
 	}
 
 	public static void main(String[] args) throws IOException, CloneNotSupportedException {
-		final World world = World.parse(new BufferedReader(new FileReader(
-			  "/home/seb/projects/HashCode2016/busy_day.in")));
-		System.out.println("world.warehouseById.get(7) = " + world.warehouseById.get(7));
+		if (args.length < 2) {
+			System.out.println("Usage: EarliestCompletionFirst in out");
+			System.exit(2);
+		}
+		System.out.println("in: " +args[0]);
+		System.out.println("out: " + args[1]);
+		final BufferedWriter out = new BufferedWriter(new FileWriter(args[1]));
+		final World world = World.parse(new BufferedReader(new FileReader(args[0])));
 		final EarliestCompletionFirst first = new EarliestCompletionFirst(world);
-		first.computeSchedule(new BufferedWriter(new PrintWriter(System.out)));
+		first.computeSchedule(out);
+		out.close();
 	}
 
 	private void execute(final OrderSchedule orderSchedule,

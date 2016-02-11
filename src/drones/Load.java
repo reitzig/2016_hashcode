@@ -12,7 +12,7 @@ public class Load extends Action {
 	final int warehouseId;
 
 	public String print() {
-		return droneId + " " + "D" + " " + warehouseId + " " + product.id() + " " + quantity;
+		return droneId + " " + "L" + " " + warehouseId + " " + product.id() + " " + quantity;
 	}
 
 	@Override public String toString() {
