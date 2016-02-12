@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -68,7 +67,19 @@ public class EarliestCompletionFirst {
 			do {
 				Map<Product, Integer> droneLoad = new HashMap<Product, Integer>();
 				weight = 0;
-				for (final Map.Entry<Product, Integer> entry : toDeliver.entrySet()) {
+				final Set<Map.Entry<Product, Integer>> toDeliverByWeight =
+					  new TreeSet<Map.Entry<Product, Integer>>(
+							 new Comparator<Map.Entry<Product, Integer>>() {
+								 public int compare(final Map.Entry<Product, Integer> o1,
+										final Map.Entry<Product, Integer> o2) {
+									 int w1 = o1.getKey().weight;
+									 int w2 = o2.getKey().weight;
+									 return w1 == w2 ? Integer.compare(o1.getKey().id,
+											o2.getKey().id()) : Integer.compare(w1, w2);
+								 }
+							 });
+				toDeliverByWeight.addAll(toDeliver.entrySet());
+				for (final Map.Entry<Product, Integer> entry : toDeliverByWeight) {
 					final Product product = entry.getKey();
 					final Integer Stock = warehouse.stock.get(product);
 					int stock = Stock == null ? 0 : Stock;
@@ -147,7 +158,9 @@ public class EarliestCompletionFirst {
 				assert false;
 			}
 			orderIds.add(orderSchedule.orderId);
-			System.out.println("[" + (orderIds.size()*100/world.nOrders) + "%] " + orderIds.size() + "/" + world.nOrders);
+			System.out.println(
+				  "[" + (orderIds.size() * 100 / world.nOrders) + "%] " + orderIds.size()
+						 + "/" + world.nOrders);
 			out.flush();
 		}
 	}
@@ -157,7 +170,7 @@ public class EarliestCompletionFirst {
 			System.out.println("Usage: EarliestCompletionFirst in out");
 			System.exit(2);
 		}
-		System.out.println("in: " +args[0]);
+		System.out.println("in: " + args[0]);
 		System.out.println("out: " + args[1]);
 		final BufferedWriter out = new BufferedWriter(new FileWriter(args[1]));
 		final World world = World.parse(new BufferedReader(new FileReader(args[0])));
