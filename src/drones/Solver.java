@@ -1,10 +1,9 @@
 package drones;
 
 import java.io.BufferedWriter;
-import java.io.IOException;
 
 /**
- * Created by raphael on 15.02.16.
+ * @author Raphael Reitzig <reitzig@cs.uni-kl.de>
  */
 public interface Solver {
 	void computeSchedule(BufferedWriter out) throws Exception;

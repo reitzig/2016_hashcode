@@ -3,7 +3,7 @@ package drones;
 import java.io.*;
 
 /**
- * Created by raphael on 15.02.16.
+ * @author Raphael Reitzig <reitzig@cs.uni-kl.de>
  */
 public class Main {
 	public static void main(String[] args) throws Exception {

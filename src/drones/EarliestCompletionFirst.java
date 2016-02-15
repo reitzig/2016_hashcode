@@ -1,17 +1,7 @@
 package drones;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /** @author Sebastian Wild (s_wild@cs.uni-kl.de) */
 public class EarliestCompletionFirst implements Solver {
@@ -133,22 +123,21 @@ public class EarliestCompletionFirst implements Solver {
 		return new OrderSchedule(completionTime, order.id(), actions);
 	}
 
-	OrderSchedule nextOrder() throws CloneNotSupportedException {
+	OrderSchedule nextOrder() throws Exception {
 		OrderSchedule min = new OrderSchedule(Integer.MAX_VALUE, -1);
 
-		// TODO This loop can be parallelized. Major gains possible, as this is *the* expensive part.
 		for (final Order order : world.ordersById.values()) {
 			final OrderSchedule orderSchedule = fastestSolution(order);
 			if (orderSchedule.completionTime < min.completionTime) {
 				min = orderSchedule;
 			}
 		}
+
 		return min;
 	}
 
 
-	public void computeSchedule(BufferedWriter out)
-		  throws IOException, CloneNotSupportedException {
+	public void computeSchedule(BufferedWriter out) throws Exception {
 		Set<Integer> orderIds = new TreeSet<Integer>();
 		while (!world.ordersById.isEmpty()) {
 			currentTime = nextInterestingTime();

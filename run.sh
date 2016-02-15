@@ -2,10 +2,10 @@
 alg="";
 for x in "$@"
 do
-  if [ "${alg}" == ""; ]
+  if [ "${alg}" == "" ];
   then
-    alg="${alg}";
+    alg="${x}";
   else
-    time java -cp out/production/*/ drones."${alg}" "$x" "${x%in}out";
+    time java -cp out/production/*/ drones.Main "${alg}" "$x" "${x%in}out";
   fi
 done
