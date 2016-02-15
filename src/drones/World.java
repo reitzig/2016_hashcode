@@ -60,6 +60,14 @@ public class World {
 				  wl[1]), stock));
 		}
 
+		// Set starting position of drones to warehouse 0 (cf spec.)
+		// Idle-time has already been initialised with 0 correctly.
+		final Warehouse wh0 = res.warehouseById.get(0)
+		for ( final Drone d : res.dronesById.values() ) {
+			d.x = wh0.x
+			d.y = wh0.y
+		}
+
 		res.nOrders = Integer.parseInt(in.readLine());
 		res.ordersById = new HashMap<Integer,Order>(res.nOrders*4/3+5);
 		for (int i = 0; i < res.nOrders; ++i) {
