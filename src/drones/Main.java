@@ -25,6 +25,9 @@ public class Main {
 		else if ( "ParallelECF".equals(args[0]) ) {
 			solver = new ParallelECF(world);
 		}
+		else if ( "PrefetchedECF".equals(args[0]) ) {
+			solver = new PrefetchedECF(world);
+		}
 		else {
 			throw new RuntimeException("Unknown algorithm " + args[0]);
 		}
