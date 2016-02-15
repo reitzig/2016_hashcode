@@ -1,5 +1,11 @@
-#!/bin/sh
+#!/bin/bash
+alg="";
 for x in "$@"
 do
-    time java -cp out/production/*/ drones.EarliestCompletionFirst "$x" "${x%in}out" &
+  if [ "${alg}" == ""; ]
+  then
+    alg="${alg}";
+  else
+    time java -cp out/production/*/ drones."${alg}" "$x" "${x%in}out";
+  fi
 done

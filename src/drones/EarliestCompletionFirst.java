@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /** @author Sebastian Wild (s_wild@cs.uni-kl.de) */
-public class EarliestCompletionFirst {
+public class EarliestCompletionFirst implements Solver {
 
 	public EarliestCompletionFirst(final World world) {
 		this.world = world;
@@ -135,6 +135,8 @@ public class EarliestCompletionFirst {
 
 	OrderSchedule nextOrder() throws CloneNotSupportedException {
 		OrderSchedule min = new OrderSchedule(Integer.MAX_VALUE, -1);
+
+		// TODO This loop can be parallelized. Major gains possible, as this is *the* expensive part.
 		for (final Order order : world.ordersById.values()) {
 			final OrderSchedule orderSchedule = fastestSolution(order);
 			if (orderSchedule.completionTime < min.completionTime) {
@@ -163,20 +165,6 @@ public class EarliestCompletionFirst {
 						 + "/" + world.nOrders);
 			out.flush();
 		}
-	}
-
-	public static void main(String[] args) throws IOException, CloneNotSupportedException {
-		if (args.length < 2) {
-			System.out.println("Usage: EarliestCompletionFirst in out");
-			System.exit(2);
-		}
-		System.out.println("in: " + args[0]);
-		System.out.println("out: " + args[1]);
-		final BufferedWriter out = new BufferedWriter(new FileWriter(args[1]));
-		final World world = World.parse(new BufferedReader(new FileReader(args[0])));
-		final EarliestCompletionFirst first = new EarliestCompletionFirst(world);
-		first.computeSchedule(out);
-		out.close();
 	}
 
 	private void execute(final OrderSchedule orderSchedule,
