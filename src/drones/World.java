@@ -97,6 +97,7 @@ public class World {
 			  + ", maxLoad=" + maxLoad + ')';
 	}
 
+	@Deprecated
 	public static void main(String[] args) throws IOException {
 
 		String[] inputs =

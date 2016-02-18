@@ -17,6 +17,10 @@ public class ParallelECF extends EarliestCompletionFirst {
 		super(world);
 	}
 
+	public ParallelECF(World world, boolean silent) {
+		super(world, silent);
+	}
+
 	@Override
 	OrderSchedule nextOrder() throws CloneNotSupportedException, ExecutionException, InterruptedException {
 		final Map<Order, Future<OrderSchedule>> bestSchedules = new HashMap<>();

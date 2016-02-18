@@ -7,12 +7,22 @@ import java.util.*;
 public class EarliestCompletionFirst implements Solver {
 
 	public EarliestCompletionFirst(final World world) {
+		this(world, false);
+	}
+
+	public EarliestCompletionFirst(final World world, boolean silent) {
 		this.world = world;
+		this.silent = silent;
 	}
 
 	final World world;
 
+	final boolean silent;
+
 	int currentTime;
+
+	private Score score;
+	private boolean dirty = false;
 
 	int nextInterestingTime() {
 		int res = Integer.MAX_VALUE;
@@ -138,6 +148,11 @@ public class EarliestCompletionFirst implements Solver {
 
 
 	public void computeSchedule(BufferedWriter out) throws Exception {
+		if ( dirty ) throw new IllegalAccessError("Tried to compute schedule twice");
+		dirty = true;
+
+		score = new Score();
+
 		Set<Integer> orderIds = new TreeSet<Integer>();
 		while (!world.ordersById.isEmpty()) {
 			currentTime = nextInterestingTime();
@@ -149,11 +164,13 @@ public class EarliestCompletionFirst implements Solver {
 				assert false;
 			}
 			orderIds.add(orderSchedule.orderId);
-			System.out.println(
-				  "[" + (orderIds.size() * 100 / world.nOrders) + "%] " + orderIds.size()
-						 + "/" + world.nOrders);
+			if ( !silent )
+				System.out.println("[" + (orderIds.size() * 100 / world.nOrders) + "%] " + orderIds.size() + "/" + world.nOrders);
 			out.flush();
+			score.completionTime = Math.max(score.completionTime, orderSchedule.completionTime);
 		}
+
+		if ( !silent) System.out.println("Score: " + score);
 	}
 
 	private void execute(final OrderSchedule orderSchedule,
@@ -187,6 +204,8 @@ public class EarliestCompletionFirst implements Solver {
 				final Integer old = order.quantities.get(deliver.product);
 				order.quantities.put(deliver.product, old - deliver.quantity);
 			}
+
+			score.completeOrder(orderSchedule.completionTime);
 		}
 		assert orderId != -1;
 		for (final Integer integer : orders.get(orderId).quantities.values()) {
@@ -251,4 +270,28 @@ public class EarliestCompletionFirst implements Solver {
 		}
 	}
 
+	private class Score {
+
+		private Set<Integer> orderCompletionTimes = new HashSet<>();
+		int completionTime = world.deadline;
+
+		void completeOrder(int time) {
+			orderCompletionTimes.add(time);
+		}
+
+		long get() {
+			int score = 0;
+
+			for ( int oc : orderCompletionTimes ) {
+				score += completionTime - oc;
+			}
+
+			return Math.round(Math.ceil(score * 100.0) / completionTime);
+		}
+
+		@Override
+		public String toString() {
+			return Long.toString(get());
+		}
+	}
 }
